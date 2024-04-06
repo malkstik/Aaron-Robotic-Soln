@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import time
 
-from utils import SensorReader
+from .utils.sensor_utils import SensorReader
 from collections import deque 
 
 
