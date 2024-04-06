@@ -1,6 +1,6 @@
 import sys
 
-from sensor_interfacessensor_srvsensor_srv.srv import GetLoad
+from sensor_interfaces.srv import GetLoad
 from sensor_interfaces.msg import SensorData, SensorDataArray
 
 import rclpy
