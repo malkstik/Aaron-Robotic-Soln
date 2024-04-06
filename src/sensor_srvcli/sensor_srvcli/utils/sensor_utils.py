@@ -14,7 +14,7 @@ class SensorReader:
     '''
     def __init__(self, server_address: str = '127.0.0.3', port: int = 10000):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect(server_address, port)
+        self._sock.connect((server_address, port))
 
         self._num_samples = "10"
 
@@ -35,7 +35,7 @@ class SensorReader:
             n = str(n)
         self._num_samples = n
 
-    def getData(self) -> np.ndarray[float]:
+    def getData(self) -> np.ndarray:
         message = self._num_samples.encode()
         self._sock.sendall(message)
 
