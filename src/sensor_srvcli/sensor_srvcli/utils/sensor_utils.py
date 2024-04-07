@@ -7,6 +7,8 @@ import numpy as np
 import time
 
 from typing import Union
+from collections import deque
+from sensor_interfaces.msg import SensorData, SensorDataArray
 
 class SensorReader:
     '''
@@ -44,6 +46,39 @@ class SensorReader:
 
     def __del__(self):
         self._sock.close()
+
+class SensorDataArrayMsg:
+    '''
+    Reformats data as a SensorData msg type
+    '''
+    def __init__(self, data, timestamps, logger = None):
+        self.data = data
+        self.timestamps = timestamps
+        self.logger = logger
+
+    def getMsg(self):
+        '''
+        Encapsulates each data point as a SensorData.msg and returns an array of them
+        :return: SensorDataArray.msg
+        '''
+        msg_array = SensorDataArray()
+        data_msg = SensorData()
+
+        data_deque = deque()
+        for i in range(len(self.timestamps)):
+            data_point = self.data[i, :].tolist()
+            time = self.timestamps[i].to_msg()
+
+            data_msg.data = data_point
+            data_msg.timestamp = time
+            data_deque.appendleft(data_msg)
+
+        msg_array.data = list(data_deque)
+
+        return msg_array
+
+
+
 
 if __name__ == '__main__':
     pass
