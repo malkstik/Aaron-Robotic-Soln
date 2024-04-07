@@ -1,4 +1,3 @@
 builtin_interfaces/Time req_time
 ---
-float64[] data
-builtin_interfaces/Time[] timestamps
+SensorDataArray data
