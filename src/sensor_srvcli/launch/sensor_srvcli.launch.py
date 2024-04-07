@@ -9,7 +9,9 @@ def generate_launch_description():
             name='minimal_service',
             parameters = [{'address': '127.0.0.3',
                            'port': 10000,
-                           'num_samples': '10'
+                           'num_samples': 10,
+                           'polling_rate': 2000,
+                           'dof': 3
             }]
         ),
         Node(
