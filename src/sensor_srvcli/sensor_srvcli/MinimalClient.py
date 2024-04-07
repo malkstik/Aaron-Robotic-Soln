@@ -1,13 +1,15 @@
 import sys
 
 from sensor_interfaces.srv import GetLoad
-from sensor_interfaces.msg import SensorData, SensorDataArray
+from sensor_interfaces.msg import SensorDataArray
+from builtin_interfaces.msg import Time as TimeMsg
 
 import rclpy
+from rclpy.logging import LoggingSeverity
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
-
-from time import time
+from rclpy.clock import ROSClock
+from rclpy.time import Time, Duration
 
 class MinimalClientAsync(Node):
 
@@ -20,34 +22,71 @@ class MinimalClientAsync(Node):
         timer_period = 0.002 # seconds
         self._servicetimer = self.create_timer(timer_period, self.service_timer_callback)
         self._publishtimer = self.create_timer(timer_period, self.publish_timer_callback)
-        
-        self._publisher = self.create_publisher(SensorData, 'sensor', 10)
+        self._publisher = self.create_publisher(SensorDataArray, 'sensor', 10)
+        self._clock = ROSClock()
 
-        self.msg = SensorData()
+        self.msg = SensorDataArray()
+
+        self.wait_for_response = False
+
+        self.get_logger().set_level(LoggingSeverity.DEBUG)
 
 
     def service_timer_callback(self):
-        now = time.time()
-        service_response = self.send_request(now)
+        sec, nanosec = self._clock.now().seconds_nanoseconds()
+        now = TimeMsg()
+        now.sec = sec
+        now.nanosec = nanosec
+
+        # service_response = self.send_request(now)
+        self.send_request(now)
         
-        # Make new message
-        msg = SensorData()
-        msg.data = service_response.data
-        msg.timestamps = service_response.timestamps
+        # # Make new message
+        # msg = SensorDataArray()
+        # msg.data = service_response.data
+        # msg.timestamps = service_response.timestamps
 
-        # Update message
-        self.msg = msg
-
-        self.get_logger().info('Got sensor data')
+        # # Update message
+        # self.msg = msg
 
     def publish_timer_callback(self):
+        # self.get_logger().debug(f"Published message")
         self._publisher.publish(self.msg)
 
-    def send_request(self, time: float):
+    def send_request(self, time: TimeMsg):
+        if self.wait_for_response:
+            return
         self._req.req_time = time
+
+        # self.get_logger().debug(f"Sending out service request")
         self.future = self._cli.call_async(self._req)
-        rclpy.spin_until_future_complete(self, self.future)
-        return self.future.result()
+        self.wait_for_response = True
+        # self.get_logger().debug(f"Waiting for service response")
+
+        rclpy.task.Future.add_done_callback(self.future, self.handle_service_response)
+        # rclpy.spin_until_future_complete(self, self.future)
+        # self.get_logger().debug(f"Received response")
+        # return self.future.result()
+
+    def handle_service_response(self, future):
+        try:
+            self.get_logger().debug('Received service response')
+            # Make sure the future completed successfully
+            if future.result() is not None:
+                service_response = future.result()
+
+                # Make new message only if service call was successful
+                msg = service_response.data
+
+                # Update message if theres new data
+                if len(msg.data):
+                    self.msg = msg
+                self.wait_for_response = False
+            else:
+                self.get_logger().error('Service call failed %r' % (future.exception(),))
+
+        except Exception as e:
+            self.get_logger().error('An error occurred in the service response handler: %r' % (e,))
 
 
 def main():
