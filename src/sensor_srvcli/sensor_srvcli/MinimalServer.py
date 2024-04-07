@@ -26,7 +26,7 @@ class MinimalService(Node):
         self.declare_parameter('num_samples', 10)
         self.declare_parameter('polling_rate', 2000)
         self.declare_parameter('dof', 3)
-
+        self.declare_parameter('sensor_id', "sensor_1")
 
         #Get parameters
         self._address = self.get_parameter('address').value
@@ -34,6 +34,7 @@ class MinimalService(Node):
         self._num_samples = self.get_parameter('num_samples').value
         self._rate = self.get_parameter('polling_rate').value
         self._dof = self.get_parameter('dof').value
+        self._sensor_id = self.get_parameter('sensor_id').value
 
         #Setup reader
         self._reader = SensorReader(self._address, self._port) 
@@ -48,7 +49,6 @@ class MinimalService(Node):
         self._dt_array = [Duration(seconds = 0, nanoseconds = dt*1e9) for dt in self._dt_array]
 
         self.get_logger().set_level(LoggingSeverity.DEBUG)
-
 
     def timer_callback(self):        
         now = self._clock.now()
@@ -88,12 +88,11 @@ class MinimalService(Node):
 
         data, timestamps = self.filter(data, timestamps)
 
-        response.data = SensorDataArrayMsg(data, timestamps, self.get_logger()).getMsg()
-        
+        response.data = SensorDataArrayMsg(data, timestamps, self._sensor_id, self.get_logger()).getMsg()
         self.get_logger().debug(f"Sending out service response")
         return response
 
-    def filter(self, data: np.ndarray, time: list) -> tuple[np.ndarray, deque]:
+    def filter(self, data: np.ndarray, time: list[Time]) -> tuple[np.ndarray, deque]:
         '''
         filter and unflatten data
         '''
