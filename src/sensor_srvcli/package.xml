@@ -3,8 +3,8 @@
 <package format="3">
   <name>sensor_srvcli</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="aartran@umich.edu">root</maintainer>
+  <description> Server and client implementation for exposing sensor data to ROS network</description>
+  <maintainer email="aarontranpvt@gmail.com">root</maintainer>
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>

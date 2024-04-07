@@ -1,6 +1,3 @@
-## A simple example of how to call sensor.py
-
-# socket_echo_client.py
 import socket
 import sys
 import numpy as np
@@ -51,13 +48,13 @@ class SensorReader:
 
 class SensorDataArrayMsg:
     '''
-    Reformats data as a SensorData msg type
+    Reformats data as a SensorData msg type and packs it into a SensorDataArray.msg
     '''
-    def __init__(self, data: np.ndarray, timestamps: list[Time], sensor_id: str, logger = None):
+    def __init__(self, data: np.ndarray, timestamps: list[Time], sensor_id: int, logger = None):
         self.data = data
         self.timestamps = timestamps
         self.logger = logger
-        self.sensor_id = String(data=sensor_id)
+        self.sensor_id = String(data = sensor_id)
 
     def getMsg(self):
         '''
@@ -66,8 +63,9 @@ class SensorDataArrayMsg:
         '''
         data_deque = deque()
         for i in range(len(self.timestamps)):
-            data_point = self.data[i, :].tolist()
-            time = self.timestamps[i].to_msg()
+            # Front of queue is on the right so iterate backwards through indices
+            data_point = self.data[-(i+1), :].tolist()
+            time = self.timestamps[-(i+1)].to_msg()
 
             data_msg = SensorData(data = data_point,
                                   timestamp = time,
@@ -77,12 +75,10 @@ class SensorDataArrayMsg:
 
         msg_array = SensorDataArray()
         msg_array.sensor_id = self.sensor_id
+        msg_array.oldest_timestamp = self.timestamps[-1].to_msg()
         msg_array.data = list(data_deque)
 
         return msg_array
-
-
-
 
 if __name__ == '__main__':
     pass

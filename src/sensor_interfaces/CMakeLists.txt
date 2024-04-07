@@ -15,7 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GetLoad.srv"
   "msg/SensorData.msg"
   "msg/SensorDataArray.msg"
-
+  "msg/MultipleSensorData.msg"
   DEPENDENCIES builtin_interfaces std_msgs
 )
 

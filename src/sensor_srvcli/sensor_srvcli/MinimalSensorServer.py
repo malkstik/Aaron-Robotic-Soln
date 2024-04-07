@@ -15,7 +15,8 @@ class MinimalService(Node):
 
     def __init__(self):
         super().__init__('minimal_service')
-        self._srv = self.create_service(GetLoad, 'get_load_cell_data', self.getLoadCellData)
+        self.get_logger().set_level(LoggingSeverity.DEBUG)
+
         timer_period = 0.01 # seconds
         self._timer = self.create_timer(timer_period, self.timer_callback)
         self._clock = ROSClock()
@@ -26,7 +27,7 @@ class MinimalService(Node):
         self.declare_parameter('num_samples', 10)
         self.declare_parameter('polling_rate', 2000)
         self.declare_parameter('dof', 3)
-        self.declare_parameter('sensor_id', "sensor_1")
+        self.declare_parameter('sensor_id', "sensor1")
 
         #Get parameters
         self._address = self.get_parameter('address').value
@@ -35,6 +36,9 @@ class MinimalService(Node):
         self._rate = self.get_parameter('polling_rate').value
         self._dof = self.get_parameter('dof').value
         self._sensor_id = self.get_parameter('sensor_id').value
+
+        #Setup server
+        self._srv = self.create_service(GetLoad, f'get_{self._sensor_id}_data', self.getLoadCellData)
 
         #Setup reader
         self._reader = SensorReader(self._address, self._port) 
@@ -48,7 +52,6 @@ class MinimalService(Node):
         self._dt_array = np.arange(int(self._num_samples)+1, 1, step =-1)/self._rate
         self._dt_array = [Duration(seconds = 0, nanoseconds = dt*1e9) for dt in self._dt_array]
 
-        self.get_logger().set_level(LoggingSeverity.DEBUG)
 
     def timer_callback(self):        
         now = self._clock.now()

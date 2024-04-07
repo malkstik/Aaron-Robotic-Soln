@@ -20,8 +20,8 @@ setup(
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['server = sensor_srvcli.MinimalServer:main',
-                            'client = sensor_srvcli.MinimalClient:main',
+        'console_scripts': ['server = sensor_srvcli.MinimalSensorServer:main',
+                            'client = sensor_srvcli.MinimalSensorClient:main',
                             'visualizer = sensor_srvcli.DataViz:main',
         ],
     },
