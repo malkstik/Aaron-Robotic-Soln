@@ -17,7 +17,7 @@ class MinimalSensorClientAsync(Node):
 
     def __init__(self):
         super().__init__('minimal_client_async')
-        self.get_logger().set_level(LoggingSeverity.DEBUG)
+        self.get_logger().set_level(LoggingSeverity.INFO)
 
         # Declare default parameters
         self.declare_parameter('sensors', ['sensor1'])
