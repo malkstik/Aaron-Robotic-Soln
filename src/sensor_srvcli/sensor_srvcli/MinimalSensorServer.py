@@ -53,7 +53,10 @@ class MinimalService(Node):
         self._dt_array = [Duration(seconds = 0, nanoseconds = dt*1e9) for dt in self._dt_array]
 
 
-    def timer_callback(self):        
+    def timer_callback(self):
+        '''
+        pull data from server and insert into queue
+        '''        
         now = self._clock.now()
         times = [now + dt for dt in self._dt_array]
         data = self._reader.getData()
@@ -78,8 +81,8 @@ class MinimalService(Node):
         while req_time < self._sensor_timestamps[i][0]:
             i += 1
         
+        # Get all relevant data from queue
         num_pop = len(self._sensor_timestamps) - i + 1
-
         data = None
         timestamps = []
         for _ in range(num_pop):
@@ -88,9 +91,10 @@ class MinimalService(Node):
             data = popped_data if data is None else np.hstack((popped_data,data))
             timestamps = popped_time + timestamps
 
-
+        # Filter and unflatten
         data, timestamps = self.filter(data, timestamps)
 
+        # Process to message
         response.data = SensorDataArrayMsg(data, timestamps, self._sensor_id, self.get_logger()).getMsg()
         self.get_logger().debug(f"Sending out service response")
         return response

@@ -38,7 +38,7 @@ class MinimalSensorClientAsync(Node):
         self._clock = ROSClock()
 
         # Init msg for sensoor topic
-        self.msg = MultipleSensorData(dataset = [SensorDataArray() for sensor_id in self._sensors])
+        self._msg = MultipleSensorData(dataset = [SensorDataArray() for sensor_id in self._sensors])
 
 
     def init_clients(self, sensors: list[str]) -> list[Client]:
@@ -54,6 +54,9 @@ class MinimalSensorClientAsync(Node):
         return clients
 
     def service_timer_callback(self):
+        '''
+        Send service requests on timer
+        '''
         sec, nanosec = self._clock.now().seconds_nanoseconds()
         now = TimeMsg()
         now.sec = sec
@@ -64,9 +67,12 @@ class MinimalSensorClientAsync(Node):
         
 
     def publish_timer_callback(self):
-        self._publisher.publish(self.msg)
+        self._publisher.publish(self._msg)
 
     def send_request(self, time: TimeMsg, client: Client, sensor_id: str):
+        '''
+        Sends service requests and passes future to a callback, only sends a new request if the previous futureh as been handled
+        '''
         if self.wait_for_response[sensor_id]:
             return
         
@@ -79,6 +85,9 @@ class MinimalSensorClientAsync(Node):
         rclpy.task.Future.add_done_callback(future, future_callback)
 
     def handle_service_response(self, future, sensor_id):
+        '''
+        process future from service response
+        '''
         try:
             self.get_logger().debug('Received service response')
             # Make sure the future completed successfully
@@ -89,8 +98,8 @@ class MinimalSensorClientAsync(Node):
                 msg = service_response.data
 
                 # Skip if data is empty or dataset is the same
-                if len(msg.data) and msg.oldest_timestamp != self.msg.dataset[self._sensor_idx[sensor_id]].oldest_timestamp:
-                    self.msg.dataset[self._sensor_idx[sensor_id]] = msg
+                if len(msg.data) and msg.oldest_timestamp != self._msg.dataset[self._sensor_idx[sensor_id]].oldest_timestamp:
+                    self._msg.dataset[self._sensor_idx[sensor_id]] = msg
             else:
                 self.get_logger().error('Service call failed %r' % (future.exception(),))
 

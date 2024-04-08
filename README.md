@@ -17,9 +17,7 @@ This code has been developed using:
 
 This code has been developed fully from within a Docker container. Using it with a host machine has not been tested but should work.
 
-Please see `launch/sensor_srvcli.launch.py` for an example of how to configure the network. 
-
-To add new sensors, create a new node with appropriate parameters and update `src/sensor_srvcli/utils/sensor_config.py`. The keys refer to the `sensor_id`. The values are indices. Accordingly, new sensors should be the next integer not already in `SENSOR_IDX.values() `
+Please see `launch/sensor_srvcli.launch.py`  and `config/config.yaml` for an example of how to configure the network. Configuring and adding new sensors is automatically handled by editing `config/config.yaml`.
 
 ## Using Docker
 

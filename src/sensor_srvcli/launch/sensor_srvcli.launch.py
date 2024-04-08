@@ -3,16 +3,18 @@ from launch_ros.actions import Node
 
 from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
-# from launch.substitutions import PathJoinSubstitution, Command
 
 import yaml
 import os
-def generate_launch_description():
 
+
+def generate_launch_description():
+    # Read yaml in
     config_file = os.path.join(get_package_share_directory("sensor_srvcli"), "config","config.yaml")
     with open(config_file) as stream:
         config = yaml.safe_load(stream)
 
+    # Make server nodes
     server_nodes = []
     sensor_list = []    
     for sensor_params in config['sensors']:
@@ -23,8 +25,10 @@ def generate_launch_description():
                                  parameters = [sensor_params]
                                  )
         )
+        #Save list of sensors for client node
         sensor_list.append(sensor_id)
 
+    #Make Client Node
     client_node = Node(
                         package='sensor_srvcli',
                         executable='client',
@@ -33,6 +37,7 @@ def generate_launch_description():
     )
 
 
+    #Launch
     return LaunchDescription(
         server_nodes + \
         [client_node] 
