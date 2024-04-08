@@ -41,3 +41,22 @@ colcon build
 source install/setup.sh
 python3 sensor.py & ros2 launch sensor_srvcli sensor_srvcli.launch.py 
 ```
+
+# Additional Analytics
+
+Configuring the services to be optimal requires some tuning. To support this the following features have been added:
+
+### Data Visualization
+
+DataViz.py contains a node that live plots the data obtained from the `sensors` topic. To enable this feature set `viz` to `True` in `config/config.yaml`.
+
+
+### True Update Rate Monitoring
+
+Much of the data published to the sensors topic is redundant. This is because the servers run slower than the 500Hz that the topic gets published at. To monitor the nonredundant updates, a timestamp is sent to <sensor_id>_update whenever new data is sent. This allows us to run 
+
+```
+ros2 topic hz sensor_id>_update
+```
+
+to observe the true update rate.
