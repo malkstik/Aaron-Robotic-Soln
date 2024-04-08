@@ -28,7 +28,7 @@ def generate_launch_description():
         #Save list of sensors for client node
         sensor_list.append(sensor_id)
 
-    #Make Client Node
+    # Make Client Node
     client_node = Node(
                         package='sensor_srvcli',
                         executable='client',
@@ -37,8 +37,10 @@ def generate_launch_description():
     )
 
 
+
     #Launch
     return LaunchDescription(
-        server_nodes + \
-        [client_node] 
+        server_nodes + 
+        [client_node,
+        ]
     )

@@ -24,7 +24,6 @@ setup(
     entry_points={
         'console_scripts': ['server = sensor_srvcli.MinimalSensorServer:main',
                             'client = sensor_srvcli.MinimalSensorClient:main',
-                            'visualizer = sensor_srvcli.DataViz:main',
         ],
     },
 )

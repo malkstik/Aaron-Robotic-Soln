@@ -34,7 +34,9 @@ class MinimalSensorClientAsync(Node):
         timer_period = 0.002 # seconds
         self._servicetimer = self.create_timer(timer_period, self.service_timer_callback)
         self._publishtimer = self.create_timer(timer_period, self.publish_timer_callback)
-        self._publisher = self.create_publisher(MultipleSensorData, 'sensor', 10)
+        self._publisher = self.create_publisher(MultipleSensorData, 
+                                                'sensors', 
+                                                10)
         self._clock = ROSClock()
 
         # Init msg for sensoor topic
