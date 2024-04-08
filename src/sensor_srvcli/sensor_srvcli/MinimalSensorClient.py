@@ -11,6 +11,8 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.clock import ROSClock
 from rclpy.time import Time, Duration
 from rclpy.client import Client
+from rclpy.publisher import Publisher
+
 
 class MinimalSensorClientAsync(Node):
 
@@ -37,10 +39,13 @@ class MinimalSensorClientAsync(Node):
         self._publisher = self.create_publisher(MultipleSensorData, 
                                                 'sensors', 
                                                 10)
+        self.update_trackers = self.init_update_trackers(self._sensors)
         self._clock = ROSClock()
 
-        # Init msg for sensoor topic
+        # Init msg for sensor topic
         self._msg = MultipleSensorData(dataset = [SensorDataArray() for sensor_id in self._sensors])
+
+
 
 
     def init_clients(self, sensors: list[str]) -> list[Client]:
@@ -55,6 +60,16 @@ class MinimalSensorClientAsync(Node):
 
         return clients
 
+    def init_update_trackers(self, sensors: list[str]) -> list[Publisher]:
+        update_trackers = []
+        for sensor_id in sensors:
+            update_trackers.append(self.create_publisher(TimeMsg, 
+                                                            f'{sensor_id}_update', 
+                                                            10)
+            )
+
+        return update_trackers
+    
     def service_timer_callback(self):
         '''
         Send service requests on timer
@@ -101,7 +116,9 @@ class MinimalSensorClientAsync(Node):
 
                 # Skip if data is empty or dataset is the same
                 if len(msg.data) and msg.oldest_timestamp != self._msg.dataset[self._sensor_idx[sensor_id]].oldest_timestamp:
+                    self.update_trackers[self._sensor_idx[sensor_id]].publish(self._clock.now().to_msg())
                     self._msg.dataset[self._sensor_idx[sensor_id]] = msg
+
             else:
                 self.get_logger().error('Service call failed %r' % (future.exception(),))
 

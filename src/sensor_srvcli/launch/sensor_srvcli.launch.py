@@ -49,6 +49,6 @@ def generate_launch_description():
         server_nodes + 
         [
         client_node,
-        viz_node
+        # viz_node
         ]
     )
