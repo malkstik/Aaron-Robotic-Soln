@@ -3,7 +3,6 @@ import sys
 from sensor_interfaces.srv import GetLoad
 from sensor_interfaces.msg import SensorDataArray, MultipleSensorData
 from builtin_interfaces.msg import Time as TimeMsg
-from .utils.sensor_config import SENSOR_IDX
 
 import rclpy
 from rclpy.logging import LoggingSeverity
@@ -24,6 +23,10 @@ class MinimalSensorClientAsync(Node):
         
         # Get parameters
         self._sensors = self.get_parameter('sensors').value
+
+        self._sensor_idx = {}
+        for idx, sensor in enumerate(self._sensors):
+            self._sensor_idx[sensor] = idx
 
         # Setup timers, publishers, clients, etc...
         self._cli = self.init_clients(self._sensors)
@@ -86,8 +89,8 @@ class MinimalSensorClientAsync(Node):
                 msg = service_response.data
 
                 # Skip if data is empty or dataset is the same
-                if len(msg.data) and msg.oldest_timestamp != self.msg.dataset[SENSOR_IDX[sensor_id]].oldest_timestamp:
-                    self.msg.dataset[SENSOR_IDX[sensor_id]] = msg
+                if len(msg.data) and msg.oldest_timestamp != self.msg.dataset[self._sensor_idx[sensor_id]].oldest_timestamp:
+                    self.msg.dataset[self._sensor_idx[sensor_id]] = msg
             else:
                 self.get_logger().error('Service call failed %r' % (future.exception(),))
 
