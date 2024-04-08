@@ -25,11 +25,29 @@ class SensorDataPlotter(Node):
         self.fig, self.ax = plt.subplots(6, 2)
         self.ax_flat = self.ax.flatten()
         self.scatter_plots = [ax.scatter([], [], s=10) for ax in self.ax_flat]  # 's' is for size
-        # Simplified loop for setting xlim and ylim
-        for ax in self.ax_flat:
-            ax.set_xlim(0, 10)  # Set the X-axis limits
-            ax.set_ylim(0, 1)  # Set the Y-axis limits
-        
+
+        # Iterate through all axes to configure x and y labels
+        for i, ax in enumerate(self.ax_flat):
+            if i == 0:
+                ax.set_title('sensor1')
+            elif i == 1:
+                ax.set_title('sensor2')
+
+            ax.set_xlim(0, 10)  
+            ax.set_ylim(0, 1) 
+            # Label y-axis only for leftmost subplots
+            if i % 2 == 0:  
+                ax.set_ylabel("Val")  
+            else:
+                ax.set_yticklabels([])  #
+
+            if i // 2 == len(self.ax) - 1: 
+                ax.set_xlabel("Time [s]")  # Set the x-axis label
+            else:
+                ax.set_xticklabels([])  # Hide x-axis tick labels for others
+
+
+
         # Store the most recent data received from the callback
         self.current_data = None
         self.current_timestamps = None
@@ -50,8 +68,8 @@ class SensorDataPlotter(Node):
 
         if self.current_data is not None and self.current_timestamps is not None:
             for i, scatter in enumerate(self.scatter_plots):
-                data_index = i // 6  # Index for the current data set (1 or 2)
-                row_index = i % 6  # Index for the row in the current data set
+                data_index = i % 2  # Index for the current data set 
+                row_index = i %  6  # Index for the row in the current data set
 
                 times = self.current_timestamps[data_index]
                 datapts = self.current_data[data_index][row_index]
