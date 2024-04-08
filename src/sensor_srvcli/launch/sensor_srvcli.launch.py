@@ -36,19 +36,20 @@ def generate_launch_description():
                         parameters = [{'sensors': sensor_list}]
     )
 
-    # Visualization Node (Only works for two servers with 6DOF data)
-    viz_node = Node(
-                        package='sensor_srvcli',
-                        executable='visualizer',
-                        name='visualizer',                  
-    )
 
+    nodes = server_nodes + [client_node]
+
+
+    if config['viz']:
+        # Visualization Node (Only works for two servers with 6DOF data)
+        viz_node = Node(
+                            package='sensor_srvcli',
+                            executable='visualizer',
+                            name='visualizer',                  
+        )
+        nodes.append(viz_node)
 
     #Launch
     return LaunchDescription(
-        server_nodes + 
-        [
-        client_node,
-        # viz_node
-        ]
+        nodes
     )

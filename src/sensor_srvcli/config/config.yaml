@@ -14,3 +14,4 @@ sensors:
     num_samples: 30
     polling_rate: 4000
     dof: 6
+viz: False
