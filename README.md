@@ -61,7 +61,7 @@ This is currently hard coded to only work when there are two 6DOF sensors. Each 
 Much of the data published to the sensors topic is redundant. This is because the servers run slower than the 500Hz that the topic gets published at. To monitor the nonredundant updates, a timestamp is sent to <sensor_id>_update whenever new data is sent. This allows us to run
 
 ```
-ros2 topic hz sensor_id>_update
+ros2 topic hz <sensor_id>_update
 ```
 
 to observe the true update rate.
