@@ -52,6 +52,7 @@ DataViz.py contains a node that live plots the data obtained from the `sensors` 
 
 Below is an example:
 
+<img src="https://github.com/malkstik/Aaron-Robotic-Soln/blob/master/_images/CorrectLivePlot.png?raw=true" alt="drawing" width="600"/>
 
 This is currently hard coded to only work when there are two 6DOF sensors. Each column corresponds to a single sensor. The sensor values are plotted on the y axis with the timestamp on the x axis.
 
