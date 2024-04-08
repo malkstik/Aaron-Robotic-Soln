@@ -1,0 +1,1 @@
+SENSOR_IDX = {'sensor1': 0, 'sensor2': 1}

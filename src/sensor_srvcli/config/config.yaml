@@ -11,6 +11,6 @@ sensors:
   - sensor_id: 'sensor2'
     address: '127.0.0.1'
     port: 10000
-    num_samples: 10
+    num_samples: 13
     polling_rate: 4000
     dof: 6
