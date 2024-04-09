@@ -110,4 +110,4 @@ ros2 topic hz <sensor_id>_batch_update
 
 This measures the rate of distinct chunks of data coming in.
 
-If a large density of data is required per time interval and these time intervals can be longer, then num_samples should be tuned to optimize the `<sensor_id>_update` rate. If a smaller density of data with more frequent updates is desired, then `num_samples` should be tuned to optimize the `<sensor_id>_batch_update` rate. There is necessarily a trade off between the two rates.
+If a large density of data is required per time interval and these time intervals can be longer, then `num_samples` should be tuned to optimize the `<sensor_id>_update` rate. If a smaller density of data with more frequent updates is desired, then `num_samples` should be tuned to optimize the `<sensor_id>_batch_update` rate. There is necessarily a trade off between the two rates.
