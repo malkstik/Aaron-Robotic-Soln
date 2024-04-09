@@ -17,7 +17,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='root',
-    maintainer_email='aartran@umich.edu',
+    maintainer_email='aarontranpvt@gmail.com',
     description='This package is designed to expose sensor data from a local server',
     license='Apache-2.0',
     tests_require=['pytest'],
