@@ -17,7 +17,7 @@ class MinimalService(Node):
         super().__init__('minimal_service')
         self.get_logger().set_level(LoggingSeverity.INFO)
 
-        timer_period = 0.01 # seconds
+        timer_period = 0.005 # seconds
         self._timer = self.create_timer(timer_period, self.timer_callback)
         self._clock = ROSClock()
 
