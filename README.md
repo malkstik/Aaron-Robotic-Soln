@@ -94,13 +94,15 @@ This is currently hard coded to only work when there are two 6DOF sensors. Each 
 
 ### True Update Rate Monitoring
 
-Much of the data published to the `sensors` topic is redundant. This is because the servers run slower than the 500Hz that the topic gets published at. To monitor the nonredundant updates, a timestamp is sent to the `<sensor_id>_update` topic  and `<sensor_id>_batch_update` whenever new data is sent. This allows us to run
+Much of the data published to the `sensors` topic is redundant. This is because the servers run slower than the 500Hz that the topic gets published at. To monitor the nonredundant updates, a timestamp is sent to the `<sensor_id>_update` topic  and `<sensor_id>_batch_update` whenever new data is sent. This enables us to monitor two relevant update rates.
+
+We can run
 
 ```
 ros2 topic hz <sensor_id>_update
 ```
 
-to observe the true update rate. This accounts for each `SensorData.msg `corresponding to the `senor_id` that is newly sent to the `sensors` topic. This gives an idea of how much data flows through the network.
+to observe the singular update rate. This accounts for each `SensorData.msg `corresponding to the `senor_id` that is newly sent to the `sensors` topic. This gives an idea of how much data flows through the network.
 
 Alternatively, to observe the batch update rate, we can run
 
