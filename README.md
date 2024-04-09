@@ -102,7 +102,7 @@ We can run
 ros2 topic hz <sensor_id>_update
 ```
 
-to observe the singular update rate. This accounts for each `SensorData.msg `corresponding to the `senor_id` that is newly sent to the `sensors` topic. This gives an idea of how much data flows through the network.
+to observe the singular update rate. This accounts for each `SensorData.msg` corresponding to the `sensor_id` that is newly sent to the `sensors` topic. This gives an idea of how much data flows through the network.
 
 Alternatively, to observe the batch update rate, we can run
 
