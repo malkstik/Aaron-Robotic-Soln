@@ -34,6 +34,16 @@ builtin_interfaces/Time timestamp
 std_msgs/String sensor_id
 ```
 
+## GetLoad.srv
+
+Given a request timestamp, the server parses through its queue and responds with data that is the same age or older than the request.
+
+```
+builtin_interfaces/Time req_time
+---
+SensorDataArray data
+```
+
 # Dependencies
 
 This code has been developed using:
