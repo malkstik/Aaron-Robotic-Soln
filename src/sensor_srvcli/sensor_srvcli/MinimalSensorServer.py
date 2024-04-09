@@ -10,14 +10,16 @@ from rclpy.logging import LoggingSeverity
 from rclpy.node import Node
 from rclpy.clock import ROSClock
 from rclpy.time import Time, Duration
+from rclpy.executors import MultiThreadedExecutor
 
+import time
 class MinimalService(Node):
 
     def __init__(self):
         super().__init__('minimal_service')
-        self.get_logger().set_level(LoggingSeverity.INFO)
+        self.get_logger().set_level(LoggingSeverity.DEBUG)
 
-        timer_period = 0.01 # seconds
+        timer_period = 0.045 # seconds
         self._timer = self.create_timer(timer_period, self.timer_callback)
         self._clock = ROSClock()
 
@@ -59,6 +61,7 @@ class MinimalService(Node):
         '''        
         now = self._clock.now()
         times = [now + dt for dt in self._dt_array]
+
         data = self._reader.getData()
 
         self._sensor_deque.appendleft(data) 
@@ -72,17 +75,12 @@ class MinimalService(Node):
         req_time = Time.from_msg(request.req_time)
 
         # If no data or all data is newer than the request
-        if not self._sensor_timestamps or req_time < self._sensor_timestamps[-1][0]: 
+        if not self._sensor_timestamps: 
             self.get_logger().debug(f"No data, sending out empty service response")
             return response
 
-        # Search for what portion of deque is older than the request
-        i = 0
-        while req_time < self._sensor_timestamps[i][0]:
-            i += 1
-        
         # Get all relevant data from queue
-        num_pop = len(self._sensor_timestamps) - i + 1
+        num_pop = len(self._sensor_timestamps)
         data = None
         timestamps = []
         for _ in range(num_pop):
@@ -112,10 +110,14 @@ def main():
     rclpy.init()
 
     minimal_service = MinimalService()
+    executor = MultiThreadedExecutor()
+    executor.add_node(minimal_service)
 
     try:
-        rclpy.spin(minimal_service)
+        executor.spin()
+        # rclpy.spin(minimal_service)
     finally:
+        executor.shutdown()
         minimal_service.destroy_node()
         rclpy.shutdown()
 

@@ -19,8 +19,8 @@ def generate_launch_description():
     sensor_list = []    
     for sensor_params in config['sensors']:
         sensor_id = sensor_params['sensor_id']
-        server_nodes.append(Node(package = 'sensor_srvcli',
-                                 executable = 'server',
+        server_nodes.append(Node(package = 'sensor_srv',
+                                 executable = 'minimal_server',
                                  name= f'{sensor_id}_server',
                                  parameters = [sensor_params]
                                  )
