@@ -94,12 +94,20 @@ This is currently hard coded to only work when there are two 6DOF sensors. Each 
 
 ### True Update Rate Monitoring
 
-Much of the data published to the `sensors` topic is redundant. This is because the servers run slower than the 500Hz that the topic gets published at. To monitor the nonredundant updates, a timestamp is sent to the `<sensor_id>_update` topic whenever new data is sent. This allows us to run
+Much of the data published to the `sensors` topic is redundant. This is because the servers run slower than the 500Hz that the topic gets published at. To monitor the nonredundant updates, a timestamp is sent to the `<sensor_id>_update` topic  and `<sensor_id>_batch_update` whenever new data is sent. This allows us to run
 
 ```
 ros2 topic hz <sensor_id>_update
 ```
 
-to observe the true update rate*.
+to observe the true update rate. This accounts for each individual datapoint that is newly sent to the `sensors` topic. This gives an idea of how much data flows 
 
-**The true update rate is agnostic to the **batch of data** coming in. It only measures when the array of data being published is being updated.*
+Alternatively, to observe the batch update rate, we can run
+
+```
+ros2 topic hz <sensor_id>_batch_update
+```
+
+This measures the rate of distinct chunks of data coming in.
+
+If a large density of data is required per time interval and these time intervals can be longer, then num_samples should be tuned to optimize the `<sensor_id>_update` rate. If a smaller density of data with more frequent updates is desired, then `num_samples` should be tuned to optimize the `<sensor_id>_batch_update` rate. There is necessarily a trade off between the two rates.

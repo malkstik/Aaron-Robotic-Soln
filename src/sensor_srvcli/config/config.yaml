@@ -4,14 +4,14 @@ sensors:
   - sensor_id: 'sensor1'
     address: '127.0.0.3'
     port: 10000
-    num_samples: 20
+    num_samples: 25
     polling_rate: 2000
     dof: 6
 
   - sensor_id: 'sensor2'
     address: '127.0.0.1'
     port: 10000
-    num_samples: 30
+    num_samples: 35
     polling_rate: 4000
     dof: 6
 viz: False
