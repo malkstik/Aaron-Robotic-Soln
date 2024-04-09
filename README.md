@@ -2,7 +2,37 @@
 
 This code serves as a solution for the assignment provided by MachinaLabs, detailed at [https://github.com/Machina-Labs/robotic_hw](https://github.com/Machina-Labs/robotic_hw)
 
-Each sensor corresponds to a single server node. There is one client node that sends service requests to all available servers (as indicated by the sensors parameter). The client node publishes the most up to date data it has received from the servers to the `sensor` topic.
+Each sensor corresponds to a single server node. There is one client node that sends service requests to all available servers, where there exists one server for each sensor. These requests return data in the form of a `SensorDataArray.msg`. The client node concatenates this data and publishes them in the form of a `MultipleSensorData.msg` to the `sensor` topic.
+
+## Message Types
+
+### MultipleSensorData.msg
+
+This message type stores the **set** of `SensorDataArray.msg` corresponding to **each** `sensor_id`.
+
+```
+SensorDataArray[] dataset
+```
+
+### SensorDataArray.msg
+
+This message type stores the **set** of `SensorData.msg` corresponding to a **single** `sensor_id`.
+
+```
+SensorData[] data
+std_msgs/String sensor_id
+builtin_interfaces/Time oldest_timestamp
+```
+
+### SensorData.msg
+
+This message type stores the a **single** data point corresponding to a **single** `sensor_id`. The data field has equivalent length to the sensor's degrees of freedom.
+
+```
+float64[] data
+builtin_interfaces/Time timestamp
+std_msgs/String sensor_id
+```
 
 # Dependencies
 
@@ -17,19 +47,23 @@ This code has been developed using:
 
 This code has been developed fully from within a Docker container. Using it with a host machine has not been tested but should work.
 
-Please see `launch/sensor_srvcli.launch.py`  and `config/config.yaml` for an example of how to configure the network. Configuring and adding new sensors is automatically handled by editing `config/config.yaml`.
+Please see `launch/sensor_srvcli.launch.py`  and `config/config.yaml` for an example of how to configure the network. Configuring and adding new sensors is automatically handled by editing `config/config.yaml`. Note that data visualization does not dynamically support different configurations.
 
 ## Using Docker
 
+source/opt/ros/humble/setup.bash is handled by ~/.bashrc
+
 ```
 cd <path_to_repo>
-./.docker/build.sh <path_to_repo> 
+./.docker/build.sh <path_to_repo>/.docker 
 ./.docker/run.sh <path_to_repo> latest
 
 #In docker container
 cd /home/Aaron/mnt
 colcon build
 source install/setup.sh
+
+#The following command may be split up but requires multiple terminals. If split up, sensor.py must be executed before the launch file
 python3 sensor.py & ros2 launch sensor_srvcli sensor_srvcli.launch.py 
 ```
 
@@ -39,6 +73,8 @@ python3 sensor.py & ros2 launch sensor_srvcli sensor_srvcli.launch.py
 cd <path_to_repo>
 colcon build
 source install/setup.sh
+
+#The following command may be split up but requires multiple terminals. If split up, sensor.py must be executed before the launch file
 python3 sensor.py & ros2 launch sensor_srvcli sensor_srvcli.launch.py 
 ```
 
@@ -64,4 +100,6 @@ Much of the data published to the `sensors` topic is redundant. This is because 
 ros2 topic hz <sensor_id>_update
 ```
 
-to observe the true update rate.
+to observe the true update rate*.
+
+**The true update rate is agnostic to the **batch of data** coming in. It only measures when the array of data being published is being updated.*
